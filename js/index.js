@@ -2,8 +2,23 @@ let elInput = findEl('.js-input')
 let elList = findEl('.js-list')
 
 let localData = localStorage.getItem('todos');
-let todos =JSON.parse(localData) ? JSON.parse(localData) : [];
-console.log(JSON.parse(localData));
+let todos = localData ? JSON.parse(localData) : [];
+// console.log(JSON.parse(localData));
+
+let handleDeleteTodo = (evt) => {
+console.log(evt.target.dataset.id);
+let FiltredArr = []
+for (let i = 0; i < todos.length; i++) {
+    if (todos[i].id !== evt.target.dataset.id){
+        console.log(todos[i]);
+        FiltredArr.push(todos[i])
+    }
+}
+todos = FiltredArr
+localStorage.setItem('todos',JSON.stringify(FiltredArr))
+renderElements(FiltredArr);
+}
+
 function createTodoItem(todo){
     let todoItem = `
    <div class="align-items-center  d-flex px-3 py-2">
@@ -13,7 +28,7 @@ function createTodoItem(todo){
     </div>
         <div class="btn-box ms-auto ">
             <button class="btn btn-success">Edit</button>
-            <button class="btn btn-danger ms-1">Delete</button>
+            <button class="btn btn-danger ms-1 delete"data-id="${todo.id}">Delete</button>
         </div>
    </div>     
     `
@@ -22,6 +37,12 @@ elTodoItem.className = "todo-item border"
 elTodoItem.innerHTML = todoItem
 elList.appendChild(elTodoItem)
 
+// elList.addEventListener('click', handleDeleteTodo)
+
+let elDeleteBtn = document.querySelector('.delete')
+elDeleteBtn.dataset.id = todo.id
+// console.log(elDeleteBtn.dataset.id);
+elList.addEventListener('click',handleDeleteTodo)
 }
 
 
@@ -34,7 +55,7 @@ function renderElements(array){
     }
 }
 
-var i = todos[-1] ? todos[-1].id : 1
+// var i = todos[-1] ? todos[-1].id : 1
 function handleAddtodo(evt) {
     if (evt.keyCode === 13){
         let newTodo = {
@@ -42,13 +63,13 @@ function handleAddtodo(evt) {
             title : elInput.value,
             isCompleted: false,
         };
-        todos.unshift(newTodo)
+        todos.push(newTodo)
         localStorage.setItem('todos',JSON.stringify(todos));
         renderElements(todos);
         elInput.value = null
        
     }
 }
-console.log(todos);
+
 renderElements(todos);
 elInput.addEventListener('keyup', handleAddtodo);
